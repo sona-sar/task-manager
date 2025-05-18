@@ -1,5 +1,7 @@
 import React from "react";
 import { FaCheck, FaCircle, FaSquare, FaStar, FaPen } from "react-icons/fa";
+import { FaTrashCan } from "react-icons/fa6";
+
 import { Button } from "@/components/ui/button";
 
 export type TaskType = {
@@ -31,6 +33,12 @@ const Task: React.FC<TaskProps> = ({ task, onToggle }) => {
               <FaPen className="p-0 m-0 w-1 h-1 text-black dark:text-white transform" />
             </Button>
             <Button
+              variant="ghost"
+              className="w-5 h-5 p-0 leading-none flex items-center justify-center"
+            >
+              <FaTrashCan className="p-0 m-0 w-1 h-1 text-black dark:text-white transfor" />
+            </Button>
+            <Button
               variant="default"
               size="circle"
               className="w-5 h-5 min-w-5 rounded-full p-0 leading-none flex items-center justify-center bg-black dark:bg-white"
@@ -54,8 +62,8 @@ const Task: React.FC<TaskProps> = ({ task, onToggle }) => {
               task.priority === "low"
                 ? "bg-lime-100 dark:bg-lime-300 text-lime-600 dark:text-green-950"
                 : task.priority === "medium"
-                ? "bg-orange-100 dark:bg-orange-400 text-orange-400 dark:text-orange-900"
-                : "bg-red-100 dark:bg-rose-400 text-red-400 dark:text-red-950"
+                  ? "bg-orange-100 dark:bg-orange-400 text-orange-400 dark:text-orange-900"
+                  : "bg-red-100 dark:bg-rose-400 text-red-400 dark:text-red-950"
             }`}
         >
           {task.priority === "low" ? (

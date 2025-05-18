@@ -21,8 +21,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 function Main() {
+  const tasks = useQuery(api.tasks.get) ?? [];
+  const addTask = useMutation(api.tasks.add);
+  const deleteTask = useMutation(api.tasks.deleteTask);
+  const toggleCompleted = useMutation(api.tasks.toggleCompleted);
+
   const [dialogOpen, setDialogOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<"dateadded" | "daysleft" | "priority">(
@@ -48,7 +55,6 @@ function Main() {
           (a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]
         );
         break;
-        break;
       case "daysleft":
         tasks.sort((a, b) => a.deadline - b.deadline);
         break;
@@ -58,64 +64,10 @@ function Main() {
     }
   };
 
-  const [tasks, setTasks] = useState<TaskType[]>([
-    {
-      id: "1",
-      title: "Finish project",
-      description: "Complete the UI for the dashboard",
-      completed: false,
-      priority: "high",
-      createdAt: 1,
-      deadline: 4,
-    },
-    {
-      id: "2",
-      title: "Finish project",
-      description: "Complete the UI for the dashboard",
-      completed: true,
-      priority: "low",
-      createdAt: 2,
-      deadline: 5,
-    },
-    {
-      id: "3",
-      title: "Finish project",
-      description: "Complete the UI for the dashboard",
-      completed: false,
-      priority: "medium",
-      createdAt: 3,
-      deadline: 1,
-    },
-    {
-      id: "4",
-      title: "Hello project",
-      description: "Complete the UI for the dashboard",
-      completed: false,
-      priority: "high",
-      createdAt: 4,
-      deadline: 10,
-    },
-  ]);
-
-  const handleToggle = (id: string) => {
-    console.log(id);
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
-      )
-    );
-  };
-
-  const addNewTask = (
+  const addNewTask = async (
     task: Omit<TaskType, "id" | "createdAt" | "completed">
   ) => {
-    const newFullTask: TaskType = {
-      ...task,
-      id: Date.now().toString(),
-      createdAt: Date.now(),
-      completed: false,
-    };
-    setTasks((prev) => [...prev, newFullTask]);
+    await addTask(task);
     setNewTask({
       title: "",
       description: "",
@@ -123,6 +75,10 @@ function Main() {
       deadline: 1,
     });
     setDate(undefined);
+  };
+
+  const handleToggle = async (id: string) => {
+    await toggleCompleted({ id: id as any });
   };
 
   const sortedTasks = [...tasks];
@@ -240,13 +196,13 @@ function Main() {
 
                 <div className="flex justify-end">
                   <Button
-                    onClick={() => {
+                    onClick={async () => {
                       if (!newTask.title || !date) {
                         alert("Invalid input!");
                         return;
                       }
 
-                      addNewTask(newTask);
+                      await addNewTask(newTask);
                       setDialogOpen(false);
                     }}
                     className="rounded-full"
@@ -285,7 +241,11 @@ function Main() {
               : task.title.toLowerCase().includes(search.toLowerCase());
           })
           .map((task) => (
-            <Task key={task.id} task={task} onToggle={handleToggle} />
+            <Task
+              key={task._id}
+              task={{ ...task, id: task._id }}
+              onToggle={handleToggle}
+            />
           ))}
       </div>
     </div>
