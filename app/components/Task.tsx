@@ -52,10 +52,10 @@ const Task: React.FC<TaskProps> = ({ task, onToggle }) => {
           className={`flex gap-1 items-center py-1 px-2 rounded-full
             ${
               task.priority === "low"
-                ? "bg-yellow-100 dark:bg-lime-300 dark:text-green-950"
+                ? "bg-lime-100 dark:bg-lime-300 text-lime-600 dark:text-green-950"
                 : task.priority === "medium"
-                ? "bg-orange-100 dark:bg-orange-400 dark:text-orange-900"
-                : "bg-red-100 dark:bg-rose-400 dark:text-red-950"
+                ? "bg-orange-100 dark:bg-orange-400 text-orange-400 dark:text-orange-900"
+                : "bg-red-100 dark:bg-rose-400 text-red-400 dark:text-red-950"
             }`}
         >
           {task.priority === "low" ? (
