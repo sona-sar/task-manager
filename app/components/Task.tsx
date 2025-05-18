@@ -1,14 +1,15 @@
 import React from "react";
-import { FaCheck, FaCircle, FaSquare, FaStar } from "react-icons/fa";
+import { FaCheck, FaCircle, FaSquare, FaStar, FaPen } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
+
 export type TaskType = {
   id: string;
   title: string;
   description: string;
   completed: boolean;
   priority: "low" | "medium" | "high";
-  createdAt: number; //timestamp
-  deadline: number; //timestamp
+  createdAt: number;
+  deadline: number;
 };
 
 type TaskProps = {
@@ -22,18 +23,26 @@ const Task: React.FC<TaskProps> = ({ task, onToggle }) => {
       <div>
         <div className="flex justify-between">
           <h3 className="text-lg font-semibold">{task.title}</h3>
-          <Button
-            variant="default"
-            size="circle"
-            className="w-5 h-5 min-w-5 rounded-full p-0 leading-none flex items-center justify-center bg-black dark:bg-white"
-            onClick={() => onToggle(task.id)}
-          >
-            {task.completed ? (
-              <FaCheck className="p-0 m-0 w-1 h-1 text-white dark:text-black transform scale-60" />
-            ) : (
-              <FaCircle className="p-0 m-0 w-1 h-1 text-white dark:text-black transform scale-90" />
-            )}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              className="w-5 h-5 p-0 leading-none flex items-center justify-center"
+            >
+              <FaPen className="p-0 m-0 w-1 h-1 text-black dark:text-white transform" />
+            </Button>
+            <Button
+              variant="default"
+              size="circle"
+              className="w-5 h-5 min-w-5 rounded-full p-0 leading-none flex items-center justify-center bg-black dark:bg-white"
+              onClick={() => onToggle(task.id)}
+            >
+              {task.completed ? (
+                <FaCheck className="p-0 m-0 w-1 h-1 text-white dark:text-black transform scale-60" />
+              ) : (
+                <FaCircle className="p-0 m-0 w-1 h-1 text-white dark:text-black transform scale-90" />
+              )}
+            </Button>
+          </div>
         </div>
         <p className="text-sm">{task.description}</p>
       </div>
