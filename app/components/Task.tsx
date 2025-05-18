@@ -17,9 +17,10 @@ export type TaskType = {
 type TaskProps = {
   task: TaskType;
   onToggle: (id: string) => void;
+  onDelete: (id: string) => void;
 };
 
-const Task: React.FC<TaskProps> = ({ task, onToggle }) => {
+const Task: React.FC<TaskProps> = ({ task, onToggle, onDelete }) => {
   return (
     <div className="p-4 rounded-2xl border min-h-40 flex flex-col justify-between bg-white dark:bg-slate-900 cursor-pointer transform hover:scale-102 duration-150">
       <div>
@@ -35,6 +36,7 @@ const Task: React.FC<TaskProps> = ({ task, onToggle }) => {
             <Button
               variant="ghost"
               className="w-5 h-5 p-0 leading-none flex items-center justify-center"
+              onClick={() => onDelete(task.id)}
             >
               <FaTrashCan className="p-0 m-0 w-1 h-1 text-black dark:text-white transfor" />
             </Button>

@@ -81,6 +81,10 @@ function Main() {
     await toggleCompleted({ id: id as any });
   };
 
+  const handleDelete = async (id: string) => {
+    await deleteTask({ id: id as any });
+  };
+
   const sortedTasks = [...tasks];
   sortTasks(sortedTasks);
 
@@ -245,6 +249,7 @@ function Main() {
               key={task._id}
               task={{ ...task, id: task._id }}
               onToggle={handleToggle}
+              onDelete={handleDelete}
             />
           ))}
       </div>
