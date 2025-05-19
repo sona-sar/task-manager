@@ -117,7 +117,7 @@ function Main() {
   return (
     <div>
       {/* top */}
-      <div className="flex justify-between items-center py-10">
+      <div className="flex md:flex-row flex-col gap-4 justify-between items-center py-10">
         <div className="flex gap-4">
           <div className="flex items-center bg-black/3 dark:bg-white/8 rounded-full px-3 py-2">
             <FaMagnifyingGlass className="text-black dark:text-white" />
@@ -136,63 +136,69 @@ function Main() {
                 <DialogTitle className="mb-2">
                   {editingTaskId ? "Edit task" : "Add a new task!"}
                 </DialogTitle>
-                <div>
-                  <p className="text-sm">Title*</p>
-                  <input
-                    value={newTask.title}
-                    placeholder="Enter title"
-                    onChange={(e) =>
-                      setNewTask({ ...newTask, title: e.target.value })
-                    }
-                    className="placeholder:text-sm text-sm px-3 py-2 mt-1 outline-none rounded-full border"
-                  />
-                </div>
-                <div>
-                  <p className="text-sm">Description</p>
-                  <input
-                    value={newTask.description}
-                    placeholder="Enter description"
-                    onChange={(e) =>
-                      setNewTask({ ...newTask, description: e.target.value })
-                    }
-                    className="placeholder:text-sm text-sm px-3 py-2 mt-1 outline-none rounded-full border"
-                  />
-                </div>
-                <div className="flex gap-2 items-center text-xs mt-2">
-                  <button
-                    onClick={() => setNewTask({ ...newTask, priority: "high" })}
-                    className={`cursor-pointer flex items-center gap-1 px-3 py-2 rounded-full border transition-colors ${
-                      newTask.priority === "high"
-                        ? "bg-primary text-primary-foreground"
-                        : "text-secondary-foreground"
-                    }`}
-                  >
-                    <FaStar className="text-xs" /> High
-                  </button>
+                <div className="items-center sm:items-start flex flex-col gap-3">
+                  <div>
+                    <p className="text-sm">Title*</p>
+                    <input
+                      value={newTask.title}
+                      placeholder="Enter title"
+                      onChange={(e) =>
+                        setNewTask({ ...newTask, title: e.target.value })
+                      }
+                      className="placeholder:text-sm text-sm px-3 py-2 mt-1 outline-none rounded-full border"
+                    />
+                  </div>
+                  <div>
+                    <p className="text-sm">Description</p>
+                    <input
+                      value={newTask.description}
+                      placeholder="Enter description"
+                      onChange={(e) =>
+                        setNewTask({ ...newTask, description: e.target.value })
+                      }
+                      className="placeholder:text-sm text-sm px-3 py-2 mt-1 outline-none rounded-full border"
+                    />
+                  </div>
+                  <div className="flex gap-2 items-center text-xs mt-2">
+                    <button
+                      onClick={() =>
+                        setNewTask({ ...newTask, priority: "high" })
+                      }
+                      className={`cursor-pointer flex items-center gap-1 px-3 py-2 rounded-full border transition-colors ${
+                        newTask.priority === "high"
+                          ? "bg-primary text-primary-foreground"
+                          : "text-secondary-foreground"
+                      }`}
+                    >
+                      <FaStar className="text-xs" /> High
+                    </button>
 
-                  <button
-                    onClick={() =>
-                      setNewTask({ ...newTask, priority: "medium" })
-                    }
-                    className={`cursor-pointer flex items-center gap-1 px-3 py-2 rounded-full border transition-colors ${
-                      newTask.priority === "medium"
-                        ? "bg-primary text-primary-foreground"
-                        : "text-secondary-foreground"
-                    }`}
-                  >
-                    <FaSquare className="text-xs" /> Medium
-                  </button>
+                    <button
+                      onClick={() =>
+                        setNewTask({ ...newTask, priority: "medium" })
+                      }
+                      className={`cursor-pointer flex items-center gap-1 px-3 py-2 rounded-full border transition-colors ${
+                        newTask.priority === "medium"
+                          ? "bg-primary text-primary-foreground"
+                          : "text-secondary-foreground"
+                      }`}
+                    >
+                      <FaSquare className="text-xs" /> Medium
+                    </button>
 
-                  <button
-                    onClick={() => setNewTask({ ...newTask, priority: "low" })}
-                    className={`cursor-pointer flex items-center gap-1 px-3 py-2 rounded-full border transition-colors ${
-                      newTask.priority === "low"
-                        ? "bg-primary text-primary-foreground"
-                        : "text-secondary-foreground"
-                    }`}
-                  >
-                    <FaCircle className="text-xs" /> Low
-                  </button>
+                    <button
+                      onClick={() =>
+                        setNewTask({ ...newTask, priority: "low" })
+                      }
+                      className={`cursor-pointer flex items-center gap-1 px-3 py-2 rounded-full border transition-colors ${
+                        newTask.priority === "low"
+                          ? "bg-primary text-primary-foreground"
+                          : "text-secondary-foreground"
+                      }`}
+                    >
+                      <FaCircle className="text-xs" /> Low
+                    </button>
+                  </div>
                 </div>
 
                 <div className="mt-2">
@@ -288,7 +294,7 @@ function Main() {
       </div>
 
       {/* tasks */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {sortedTasks
           .filter((task) => {
             return search.toLowerCase() === ""

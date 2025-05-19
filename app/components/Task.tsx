@@ -26,12 +26,14 @@ const Task: React.FC<TaskProps> = ({ task, onToggle, onDelete, onEdit }) => {
     <div className="p-4 rounded-2xl border min-h-40 flex flex-col justify-between bg-white dark:bg-slate-900 cursor-pointer transform hover:scale-102 duration-150">
       <div>
         <div className="flex justify-between">
-          <h3 className="text-lg font-semibold">{task.title}</h3>
-          <div className="flex items-center gap-2">
+          <h3 className="text-lg font-semibold break-words max-w-[60%]">
+            {task.title}
+          </h3>
+          <div className="flex gap-2 items-start">
             <Button
               variant="ghost"
               className="w-5 h-5 p-0 leading-none flex items-center justify-center"
-              onClick = {() => onEdit(task.id)}
+              onClick={() => onEdit(task.id)}
             >
               <FaPen className="p-0 m-0 w-1 h-1 text-black dark:text-white transform" />
             </Button>
@@ -56,7 +58,9 @@ const Task: React.FC<TaskProps> = ({ task, onToggle, onDelete, onEdit }) => {
             </Button>
           </div>
         </div>
-        <p className="text-sm">{task.description}</p>
+        <p className="text-sm break-words max-w-[90%] mb-2">
+          {task.description}
+        </p>
       </div>
 
       <div className="text-xs flex gap-2 items-center justify-between">
