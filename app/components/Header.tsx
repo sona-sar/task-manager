@@ -4,7 +4,7 @@ import { FaMoon, FaSun } from "react-icons/fa";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 
-function header() {
+function Header() {
   const { theme, setTheme } = useTheme();
 
   return (
@@ -23,4 +23,4 @@ function header() {
   );
 }
 
-export default header;
+export default Header;
