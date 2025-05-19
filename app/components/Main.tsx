@@ -1,11 +1,14 @@
 "use client";
-import React, { useState } from "react";
+
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { FaMagnifyingGlass } from "react-icons/fa6";
-import { FaChevronDown } from "react-icons/fa";
-import Task, { TaskType } from "./Task";
-import { FaCircle, FaSquare, FaStar } from "react-icons/fa";
-import { cn } from "@/lib/utils";
+import {
+  FaMagnifyingGlass,
+  FaChevronDown,
+  FaCircle,
+  FaSquare,
+  FaStar,
+} from "react-icons/fa6";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
@@ -21,17 +24,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import Task, { TaskType } from "./Task";
+import { cn } from "@/lib/utils";
 
 function Main() {
-  const tasks = useQuery(api.tasks.get) ?? [];
-  const addTask = useMutation(api.tasks.add);
-  const deleteTask = useMutation(api.tasks.deleteTask);
-  const toggleCompleted = useMutation(api.tasks.toggleCompleted);
-
+  const [tasks, setTasks] = useState<TaskType[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [sort, setSort] = useState<"dateadded" | "daysleft" | "priority">(
     "dateadded"
   );
@@ -42,6 +42,15 @@ function Main() {
     deadline: 1,
   });
   const [date, setDate] = useState<Date | undefined>();
+
+  useEffect(() => {
+    const stored = localStorage.getItem("tasks");
+    if (stored) setTasks(JSON.parse(stored));
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  }, [tasks]);
 
   const sortTasks = (tasks: TaskType[]) => {
     switch (sort) {
@@ -64,25 +73,42 @@ function Main() {
     }
   };
 
-  const addNewTask = async (
-    task: Omit<TaskType, "id" | "createdAt" | "completed">
-  ) => {
-    await addTask(task);
-    setNewTask({
-      title: "",
-      description: "",
-      priority: "low",
-      deadline: 1,
-    });
+  const addNewTask = () => {
+    const newTaskObj: TaskType = {
+      ...newTask,
+      id: crypto.randomUUID(),
+      createdAt: Date.now(),
+      completed: false,
+    };
+    setTasks([...tasks, newTaskObj]);
+    setNewTask({ title: "", description: "", priority: "low", deadline: 1 });
     setDate(undefined);
   };
 
-  const handleToggle = async (id: string) => {
-    await toggleCompleted({ id: id as any });
+  const handleToggle = (id: string) => {
+    setTasks((prev) =>
+      prev.map((task) =>
+        task.id === id ? { ...task, completed: !task.completed } : task
+      )
+    );
   };
 
-  const handleDelete = async (id: string) => {
-    await deleteTask({ id: id as any });
+  const handleEdit = (id: string) => {
+    const task = tasks.find((t) => t.id === id);
+    if (!task) return;
+    setNewTask({
+      title: task.title,
+      description: task.description,
+      priority: task.priority,
+      deadline: task.deadline,
+    });
+    setDate(new Date(Date.now() + task.deadline * 24 * 60 * 60 * 1000));
+    setEditingTaskId(id);
+    setDialogOpen(true);
+  };
+
+  const handleDelete = (id: string) => {
+    setTasks((prev) => prev.filter((task) => task.id !== id));
   };
 
   const sortedTasks = [...tasks];
@@ -107,10 +133,13 @@ function Main() {
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle className="mb-2">Add a new task!</DialogTitle>
+                <DialogTitle className="mb-2">
+                  {editingTaskId ? "Edit task" : "Add a new task!"}
+                </DialogTitle>
                 <div>
                   <p className="text-sm">Title*</p>
                   <input
+                    value={newTask.title}
                     placeholder="Enter title"
                     onChange={(e) =>
                       setNewTask({ ...newTask, title: e.target.value })
@@ -121,6 +150,7 @@ function Main() {
                 <div>
                   <p className="text-sm">Description</p>
                   <input
+                    value={newTask.description}
                     placeholder="Enter description"
                     onChange={(e) =>
                       setNewTask({ ...newTask, description: e.target.value })
@@ -188,7 +218,10 @@ function Main() {
                           if (selectedDate) {
                             setNewTask({
                               ...newTask,
-                              deadline: selectedDate.getTime(),
+                              deadline: Math.ceil(
+                                (selectedDate.getTime() - Date.now()) /
+                                  (1000 * 60 * 60 * 24)
+                              ),
                             });
                           }
                         }}
@@ -200,16 +233,34 @@ function Main() {
 
                 <div className="flex justify-end">
                   <Button
-                    onClick={async () => {
+                    onClick={() => {
                       if (!newTask.title || !date) {
                         alert("Invalid input!");
                         return;
                       }
 
-                      await addNewTask(newTask);
+                      if (editingTaskId) {
+                        setTasks((prev) =>
+                          prev.map((task) =>
+                            task.id === editingTaskId
+                              ? {
+                                  ...task,
+                                  ...newTask,
+                                  deadline: Math.ceil(
+                                    (date.getTime() - Date.now()) /
+                                      (1000 * 60 * 60 * 24)
+                                  ),
+                                }
+                              : task
+                          )
+                        );
+                      } else {
+                        addNewTask();
+                      }
+
+                      setEditingTaskId(null);
                       setDialogOpen(false);
                     }}
-                    className="rounded-full"
                   >
                     Save
                   </Button>
@@ -246,10 +297,11 @@ function Main() {
           })
           .map((task) => (
             <Task
-              key={task._id}
-              task={{ ...task, id: task._id }}
+              key={task.id}
+              task={{ ...task, id: task.id }}
               onToggle={handleToggle}
               onDelete={handleDelete}
+              onEdit={handleEdit}
             />
           ))}
       </div>
